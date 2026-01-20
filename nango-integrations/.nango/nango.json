@@ -1,0 +1,61 @@
+[
+  {
+    "providerConfigKey": "slack-demo",
+    "actions": [
+      {
+        "type": "action",
+        "description": "Send a message to a Slack channel",
+        "endpoint": {
+          "method": "POST",
+          "path": "/example/slack/message",
+          "group": "Messages"
+        },
+        "input": "ActionInput_slack_demo_sendslackmessage",
+        "name": "send-slack-message",
+        "output": [
+          "ActionOutput_slack_demo_sendslackmessage"
+        ],
+        "scopes": [],
+        "usedModels": [
+          "ActionInput_slack_demo_sendslackmessage",
+          "ActionOutput_slack_demo_sendslackmessage"
+        ],
+        "version": "1.0.0"
+      }
+    ],
+    "syncs": [
+      {
+        "type": "sync",
+        "description": "Fetches Slack users",
+        "auto_start": false,
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/example/slack/users",
+            "group": "Users"
+          }
+        ],
+        "input": "SyncMetadata_slack_demo_slackusers",
+        "name": "slack-users",
+        "output": [
+          "SlackUser"
+        ],
+        "runs": "every hour",
+        "scopes": [],
+        "sync_type": "full",
+        "track_deletes": false,
+        "usedModels": [
+          "SlackUser",
+          "SyncMetadata_slack_demo_slackusers"
+        ],
+        "version": "1.0.0",
+        "webhookSubscriptions": []
+      }
+    ],
+    "onEventScripts": {
+      "post-connection-creation": [],
+      "pre-connection-deletion": [],
+      "validate-connection": []
+    }
+  }
+]
