@@ -48,7 +48,7 @@
           "SlackUser",
           "SyncMetadata_slack_demo_slackusers"
         ],
-        "version": "1.0.0",
+        "version": "1.0.1",
         "webhookSubscriptions": []
       }
     ],

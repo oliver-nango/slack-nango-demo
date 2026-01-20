@@ -12,7 +12,7 @@ const SlackUserSchema = z.object({
 export default createSync({
   // Human-friendly metadata for the sync
   description: 'Fetches Slack users',
-  version: '1.0.0',
+  version: '1.0.1',
   endpoints: [{ method: 'GET', path: '/example/slack/users', group: 'Users' }],
   // Keep the demo simple with a periodic full sync
   frequency: 'every hour',

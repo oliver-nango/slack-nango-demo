@@ -55,10 +55,10 @@ The client runs on `http://localhost:5173` and expects the server on `http://loc
 │   ├── index.ts              # Nango entrypoint
 │   ├── package.json          # Integration workspace deps/scripts
 │   └── slack-demo/           # Integration ID (matches Nango config)
-│       └── actions/
-│           └── send-slack-message.ts
-│       └── syncs/
-│           └── slack-users.ts
+│       └── actions/           # Action definitions exposed by Nango
+│           └── send-slack-message.ts # Action: send a Slack message
+│       └── syncs/             # Data sync definitions for Nango
+│           └── slack-users.ts # Sync: fetch Slack users
 ```
 
 ## Additional Docs
