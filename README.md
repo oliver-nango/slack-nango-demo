@@ -49,10 +49,16 @@ The client runs on `http://localhost:5173` and expects the server on `http://loc
 
 ```
 .
-├── client/              # React client (Vite)
-├── server/              # Express API for Nango + Slack
-├── nango-integrations/  # Nango integration configs/artifacts
-└── README.md            # Project overview (this file)
+├── client/                   # React client (Vite)
+├── server/                   # Express API for Nango + Slack
+├── nango-integrations/
+│   ├── index.ts              # Nango entrypoint
+│   ├── package.json          # Integration workspace deps/scripts
+│   └── slack-demo/           # Integration ID (matches Nango config)
+│       └── actions/
+│           └── send-slack-message.ts
+│       └── syncs/
+│           └── slack-users.ts
 ```
 
 ## Additional Docs

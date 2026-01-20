@@ -23,8 +23,8 @@ export default createSync({
     SlackUser: SlackUserSchema
   },
   exec: async (nango) => {
-    // Fetch all members from Slack
-    const response = await nango.get({ endpoint: '/api/users.list' });
+    // Fetch all members from Slack (Web API endpoint)
+    const response = await nango.get({ endpoint: '/users.list' });
     const members = response.data?.members || [];
 
     // Convert Slack payloads into the schema shape
