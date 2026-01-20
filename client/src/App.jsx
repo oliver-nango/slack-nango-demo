@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import Nango from '@nangohq/frontend';
 
+// Instantiate once for the whole app lifetime
 const nango = new Nango();
 
 export default function App() {
+  // Persist the connection id across reloads in localStorage for demo UX
   const [connectionId, setConnectionId] = useState(localStorage.getItem('connectionId') || null);
+  // Simple error banner state
   const [error, setError] = useState(null);
+  // UI flag for connect/reconnect modal flow
   const [isConnecting, setIsConnecting] = useState(false);
   
-  // Action trigger state
+  // Action trigger state (Slack message form)
   const [channel, setChannel] = useState('#general');
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -17,10 +21,11 @@ export default function App() {
   // 2. Trigger the auth flow (frontend)
   const connectSlack = async () => {
     try {
+      // Reset error UI and show loading state
       setError(null);
       setIsConnecting(true);
 
-      // Open Connect UI FIRST
+      // Open Connect UI FIRST so it's ready when token arrives
       const connect = nango.openConnectUI({
         onEvent: (event) => {
           if (event.type === 'close') {
@@ -54,6 +59,7 @@ export default function App() {
         })
       });
 
+      // Bubble up backend errors for display
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.error || 'Failed to fetch session token');
@@ -80,6 +86,7 @@ export default function App() {
         throw new Error('No connection ID found');
       }
 
+      // Open Connect UI to handle the reconnect flow
       const connect = nango.openConnectUI({
         onEvent: (event) => {
           if (event.type === 'close') {
@@ -102,12 +109,14 @@ export default function App() {
         })
       });
 
+      // Surface backend errors
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.error || 'Failed to fetch reconnect session token');
       }
 
       const { sessionToken } = await res.json();
+      // Start the reconnect once token is set
       connect.setSessionToken(sessionToken);
     } catch (err) {
       console.error('Reconnection error:', err);
@@ -124,6 +133,7 @@ export default function App() {
         return;
       }
 
+      // Ask the backend to validate the connection against Nango
       const res = await fetch(
         `http://localhost:3001/connection/${connectionId}?provider_config_key=slack-demo`
       );
@@ -131,6 +141,7 @@ export default function App() {
       if (!res.ok) {
         const data = await res.json();
         if (data.valid === false) {
+          // If Nango says invalid, clear local state to force reconnect
           setError('Connection is invalid. Please reconnect.');
           setConnectionId(null);
           localStorage.removeItem('connectionId');
@@ -168,6 +179,7 @@ export default function App() {
         })
       });
 
+      // If the backend rejects, surface the reason
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.error || 'Failed to delete connection');
@@ -202,6 +214,7 @@ export default function App() {
       setIsSending(true);
       setActionResult(null);
 
+      // Call the backend action endpoint (which calls Nango)
       const res = await fetch('http://localhost:3001/action/trigger', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -216,12 +229,14 @@ export default function App() {
         })
       });
 
+      // Parse JSON once and handle error payloads
       const data = await res.json();
 
       if (!res.ok) {
         throw new Error(data.error || 'Failed to send message');
       }
 
+      // Show response payload for demo visibility
       setActionResult(data.result);
       setMessage(''); // Clear message on success
       console.log('✅ Message sent successfully:', data.result);
@@ -229,6 +244,7 @@ export default function App() {
       console.error('Error sending message:', err);
       setError(err.message);
     } finally {
+      // Reset the sending state regardless of outcome
       setIsSending(false);
     }
   };
@@ -249,6 +265,7 @@ export default function App() {
         </div>
       )}
 
+      {/* Connection controls */}
       {connectionId ? (
         <div>
           <p>Connected! Connection ID: {connectionId}</p>
@@ -272,6 +289,7 @@ export default function App() {
 
       <hr />
 
+      {/* Action UI only available when connected */}
       {connectionId ? (
         <div style={{ marginTop: 30 }}>
           <h2>Send Slack Message</h2>
@@ -336,6 +354,7 @@ export default function App() {
             </button>
           </form>
 
+          {/* Success payload output for demo visibility */}
           {actionResult && (
             <div style={{
               marginTop: 20,

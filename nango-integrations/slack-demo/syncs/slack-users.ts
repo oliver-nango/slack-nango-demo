@@ -1,6 +1,7 @@
 import { createSync } from 'nango';
 import * as z from 'zod';
 
+// Schema for each Slack user record saved by the sync
 const SlackUserSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -9,19 +10,24 @@ const SlackUserSchema = z.object({
 });
 
 export default createSync({
+  // Human-friendly metadata for the sync
   description: 'Fetches Slack users',
   version: '1.0.0',
   endpoints: [{ method: 'GET', path: '/example/slack/users', group: 'Users' }],
+  // Keep the demo simple with a periodic full sync
   frequency: 'every hour',
   syncType: 'full',
+  // No extra input required for this sync
   metadata: z.void(),
   models: {
     SlackUser: SlackUserSchema
   },
   exec: async (nango) => {
+    // Fetch all members from Slack
     const response = await nango.get({ endpoint: '/api/users.list' });
     const members = response.data?.members || [];
 
+    // Convert Slack payloads into the schema shape
     const records = members.map((u: any) => ({
       id: u.id,
       name: u.name,
@@ -29,6 +35,7 @@ export default createSync({
       image_72: u.profile?.image_72
     }));
 
+    // Persist the records to Nango's data store
     await nango.batchSave(records, 'SlackUser');
   }
 });

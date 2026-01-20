@@ -1,14 +1,20 @@
+// Demo server used inside nango-integrations workspace.
+// Mirrors the root server but keeps the demo self-contained.
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { Nango } from '@nangohq/node';
 
+// Load environment variables from .env into process.env
 dotenv.config();
 
 const app = express();
+// Allow the demo frontend to call this API from another origin
 app.use(cors());
+// Parse JSON request bodies into req.body
 app.use(express.json());
 
+// Nango client used to create sessions and trigger actions
 const nango = new Nango({
   secretKey: process.env.NANGO_SECRET_KEY,
   host: process.env.NANGO_HOST
@@ -302,6 +308,7 @@ app.post('/action/trigger', async (req, res) => {
       });
     }
 
+    // Useful tracing in a demo setting
     console.log(`🚀 Triggering action: ${action}`);
     console.log(`   Connection: ${connectionId}`);
     console.log(`   Integration: ${providerConfigKey}`);
@@ -332,6 +339,7 @@ app.post('/action/trigger', async (req, res) => {
   }
 });
 
+// Start the demo API on the default port
 app.listen(3001, () => {
   console.log('Backend running on http://localhost:3001');
 });
